@@ -41,16 +41,18 @@ public class AES extends Encryptor {
 
 	private static void mixColumns(int[][] state) {
 		for (int i = 0; i < 4; i++) {
-			int s0 = state[0][i], s1 = state[1][i], s2 = state[2][i], s3 = state[3][i];
-			state[0][i] = mul2(s0) ^ mul3(s1) ^ s2 ^ s3;
-			state[1][i] = s0 ^ mul2(s1) ^ mul3(s2) ^ s3;
-			state[2][i] = s0 ^ s1 ^ mul2(s2) ^ mul3(s3);
-			state[3][i] = mul3(s0) ^ s1 ^ s2 ^ mul2(s3);
+			int A = state[0][i], B = state[1][i], C = state[2][i], D = state[3][i];
+
+			state[0][i] = mul2(A) ^ mul3(B) ^ C ^ D;
+			state[1][i] = A ^ mul2(B) ^ mul3(C) ^ D;
+			state[2][i] = A ^ B ^ mul2(C) ^ mul3(D);
+			state[3][i] = mul3(A) ^ B ^ C ^ mul2(D);
 		}
 	}
 
 	private static int rotateWord(int x) {
-		return (x << 8) | (x >>> 24);
+		int shift = 8;
+		return (x << shift) | (x >>> (32 - shift));
 	}
 
 	private static int subWord(int x) {
@@ -72,31 +74,31 @@ public class AES extends Encryptor {
 	}
 
 	private static void shiftRows(int[][] state) {
-		int temp = state[1][0];
+		int tmp = state[1][1];
 		state[1][0] = state[1][1];
 		state[1][1] = state[1][2];
 		state[1][2] = state[1][3];
-		state[1][3] = temp;
+		state[1][3] = tmp;
 
-		temp = state[2][0];
-		int temp2 = state[2][1];
+		tmp = state[2][0];
 		state[2][0] = state[2][2];
+		state[2][2] = tmp;
+		tmp = state[2][1];
 		state[2][1] = state[2][3];
-		state[2][2] = temp;
-		state[2][3] = temp2;
+		state[2][3] = tmp;
 
-		temp = state[3][3];
-		state[3][3] = state[3][2];
-		state[3][2] = state[3][1];
+		tmp = state[3][1];
 		state[3][1] = state[3][0];
-		state[3][0] = temp;
+		state[3][0] = state[3][3];
+		state[3][3] = state[3][2];
+		state[3][2] = tmp;
 	}
 
 	private static int[][] createStateMatrix(String hex) {
 		int[][] matrix = new int[4][4];
 		// NOTE: This loads bytes in AES column-major order.
 		for (int i = 0; i < 16; i++)
-			matrix[i % 4][i / 4] = Integer.parseInt(hex.substring(i * 2, i * 2 + 2), 16); // Flip rows and columns.
+			matrix[i % 4][i / 4] = Integer.parseInt(hex.substring(i * 2, (i + 1) * 2), 16); // Flip rows and columns.
 		return matrix;
 	}
 
@@ -104,12 +106,10 @@ public class AES extends Encryptor {
 		int[] keys = new int[n];
 
 		for (int i = 0; i < 4; i++)
-			keys[i] = Integer.parseUnsignedInt(key.substring(i * 8, i * 8 + 8), 16);
+			keys[i] = Integer.parseUnsignedInt(key.substring(i * 8, (i + 1) * 8), 16);
 
-		for (int i = 4; i < n; i++) {
-			int prevWord = keys[i - 1];
-			keys[i] = keys[i - 4] ^ (i % 4 == 0 ? g(prevWord, i) : prevWord);
-		}
+		for (int i = 4; i < n; i++)
+			keys[i] = keys[i - 4] ^ (i % 4 == 0 ? g(keys[i - 1], i) : keys[i - 1]);
 
 		return keys;
 	}
@@ -122,7 +122,6 @@ public class AES extends Encryptor {
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
 				state[i][j] ^= roundKey[i][j];
-
 	}
 
 	private static int[][] getRoundKey(int[] roundKeys, int round) {

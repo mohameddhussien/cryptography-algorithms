@@ -157,7 +157,7 @@ public class DES extends Encryptor {
 
 	private static String[] generateSubKeys(String key64) {
 		String[] subKeys = new String[16];
-		String key56 = applyPermutation(key64, PC1), C = key56.substring(0, 28), D = key56.substring(28);
+		String key56 = applyPermutation(key64, PC1), C = key56.substring(0, 56 / 2), D = key56.substring(56 / 2);
 
 		for (int i = 0; i < 16; i++) {
 			C = leftShift(C, SHIFTS[i]);
@@ -198,7 +198,7 @@ public class DES extends Encryptor {
 		StringBuilder substituted = new StringBuilder();
 
 		for (int i = 0; i < S_BOX.length; i++) {
-			String block = xored.substring(i * 6, i * 6 + 6);
+			String block = xored.substring(i * 6, (i + 1) * 6);
 			int row = Integer.parseInt("" + block.charAt(0) + block.charAt(5), 2);
 			int col = Integer.parseInt(block.substring(1, 5), 2);
 
@@ -213,16 +213,14 @@ public class DES extends Encryptor {
 
 	private String logic(String message, Boolean decrypt) {
 		String binText = hexToBin(message);
-		String[] keys = generateSubKeys(hexToBin(this.key));
-		String initialPermuted = applyPermutation(binText, IP),
-				left = initialPermuted.substring(0, 32),
-				right = initialPermuted.substring(32);
+		String[] keys = generateSubKeys(hexToBin(key));
+
+		String init = applyPermutation(binText, IP), left = init.substring(0, 32), right = init.substring(32);
 
 		for (int i = 0; i < rounds; i++) {
-			String temp = right;
-
+			String tmp = right;
 			right = xor(left, f(right, keys[decrypt ? (rounds - i - 1) : i]));
-			left = temp;
+			left = tmp;
 		}
 
 		return binToHex(applyPermutation(right + left, FP));
