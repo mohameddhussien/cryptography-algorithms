@@ -25,32 +25,33 @@ public class PlayFairCipher extends Encryptor {
 	}
 
 	private String prepare(String message) {
-		message = message.toLowerCase().replaceAll("[^a-z]", "").replaceAll("j", "i");
+		message = message.toLowerCase()
+				.replaceAll("[^a-z]", "")
+				.replace('j', 'i');
 
-		int length = message.length();
-		StringBuilder preparedMessage = new StringBuilder();
-		for (int i = 0; i < length; i++) {
-			char current = message.charAt(i);
-			preparedMessage.append(current);
+		StringBuilder result = new StringBuilder();
 
-			if (i >= length - 1)
-				break;
+		for (int i = 0; i < message.length(); i++) {
+			char first = message.charAt(i);
+			result.append(first);
 
-			char next = message.charAt(i + 1);
-
-			if (current != next) {
-				preparedMessage.append(next);
-				i++;
+			if (i + 1 >= message.length())
 				continue;
-			}
 
-			preparedMessage.append('x');
-			i--;
+			char second = message.charAt(i + 1);
+
+			if (first == second) {
+				result.append('x');
+			} else {
+				result.append(second);
+				i++;
+			}
 		}
 
-		if (preparedMessage.length() % 2 != 0)
-			preparedMessage.append('x');
-		return preparedMessage.toString();
+		if (result.length() % 2 != 0)
+			result.append('x');
+
+		return result.toString();
 	}
 
 	private int[] find(char a) {
@@ -72,18 +73,18 @@ public class PlayFairCipher extends Encryptor {
 
 		if (posA[0] == posB[0])
 			sb.append(new char[] {
-					matrix[posA[0]][(!reverse ? posA[1] + 1 : posA[1] + 4) % 5],
-					matrix[posB[0]][(!reverse ? posB[1] + 1 : posB[1] + 4) % 5]
+					matrix[posA[0]][(!reverse ? posA[1] + 1 : posA[1] - 1) % 5],
+					matrix[posB[0]][(!reverse ? posB[1] + 1 : posB[1] - 1) % 5]
 			});
 		else if (posA[1] == posB[1])
 			sb.append(new char[] {
-					matrix[(!reverse ? posA[0] + 1 : posA[0] + 4) % 5][posA[1]],
-					matrix[(!reverse ? posB[0] + 1 : posB[0] + 4) % 5][posB[1]]
+					matrix[(!reverse ? posA[0] + 1 : posA[0] - 1) % 5][posA[1]],
+					matrix[(!reverse ? posB[0] + 1 : posB[0] - 1) % 5][posB[1]]
 			});
-		else
-			sb.append(new char[] {
-					matrix[posA[0]][posB[1]], matrix[posB[0]][posA[1]]
-			});
+		else {
+			sb.append(matrix[posA[0]][posB[1]]); // Row zai ma howa w el col byt8ayar
+			sb.append(matrix[posB[0]][posA[1]]);
+		}
 
 		return sb.toString();
 	}

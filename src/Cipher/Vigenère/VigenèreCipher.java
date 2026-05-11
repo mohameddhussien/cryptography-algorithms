@@ -11,10 +11,6 @@ public class VigenèreCipher extends Encryptor {
 		this.algorithm = algorithm;
 	}
 
-	private String prepareMessage(String message) {
-		return message.toLowerCase().replaceAll("[^a-z]", "");
-	}
-
 	private void prepareKey(String message, VigenèreAlgorithm algorithm) {
 		this.key = this.key.toLowerCase().replaceAll("[^a-z]", "");
 
@@ -23,19 +19,21 @@ public class VigenèreCipher extends Encryptor {
 		if (algorithm == VigenèreAlgorithm.AUTO_KEY)
 			this.key = new StringBuilder(this.key + message).substring(0, message.length());
 
-		if (this.key.length() != message.length())
+		if (this.key.length() != message.length() && algorithm == VigenèreAlgorithm.ONE_TIME_PAD)
 			throw new IllegalArgumentException("Invalid key length for one-time pad");
+
+		throw new IllegalArgumentException("Invalid algorithm");
 	}
 
 	@Override
 	public String encrypt(String message) {
-		String preparedMessage = this.prepareMessage(message);
+		String preparedMessage = message.toLowerCase().replaceAll("[^a-z]", "");
 		this.prepareKey(preparedMessage, this.algorithm);
 
 		StringBuilder cipher = new StringBuilder();
 		for (int i = 0; i < preparedMessage.length(); i++) {
 			int p = preparedMessage.charAt(i) - 'a', k = this.key.charAt(i) - 'a';
-			cipher.append((char) ((p + k) % 26 + 'a'));
+			cipher.append((char) (((p + k) % 26) + 'a'));
 		}
 
 		return cipher.toString();

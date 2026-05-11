@@ -15,7 +15,7 @@ public class App {
 		// testCipher(
 		// new RailFenceCipher(2), "Computer Science");
 		// testCipher(
-		// new ColumnarTranspositionCipher(List.of(1, 3, 4, 2, 5)), "Computer Science");
+		// new ColumnarTranspositionCipher(List.of(1, 3, 4, 2, 5)), "computerscience");
 		// testCipher(
 		// new PlayFairCipher("ballon"), "Computer Systems");
 		// testCipher(

@@ -49,19 +49,9 @@ public class HillCipher extends Encryptor {
 		int g = this.key[2][0], h = this.key[2][1], i = this.key[2][2];
 
 		int determinant = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
-		determinant %= 26;
-		if (determinant < 0)
-			determinant += 26;
+		determinant = (determinant % 26 + 26) % 26;
 
-		int determinantInverse = -1;
-		for (int value = 1; value < 26; value++) {
-			if ((determinant * value) % 26 == 1) {
-				determinantInverse = value;
-				break;
-			}
-		}
-		if (determinantInverse == -1)
-			throw new IllegalArgumentException("Key matrix is not invertible modulo 26");
+		int determinantInverse = (int) Helpers.calculateInverse(determinant, 26);
 
 		cofactors[0][0] = e * i - f * h;
 		cofactors[0][1] = -(d * i - f * g);
@@ -76,10 +66,7 @@ public class HillCipher extends Encryptor {
 		for (int row = 0; row < this.dim; row++) {
 			for (int col = 0; col < this.dim; col++) {
 				int value = cofactors[col][row] * determinantInverse;
-				value %= 26;
-				if (value < 0)
-					value += 26;
-				inverseKey[row][col] = value;
+				inverseKey[row][col] = (value % 26 + 26) % 26;
 			}
 		}
 

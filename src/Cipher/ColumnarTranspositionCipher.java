@@ -11,25 +11,20 @@ public class ColumnarTranspositionCipher extends Encryptor {
 
 	@Override
 	public String encrypt(String message) {
-		message = message.toUpperCase().replaceAll("[^A-Z]", "");
 		int cols = this.keyOrder.size();
-		int rows = (int) Math.ceil((double) message.length() / cols);
+		int rows = (int) Math.ceil(message.length() / cols);
+
 		char[][] matrix = new char[rows][cols];
 
 		int index = 0;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				if (index < message.length())
-					matrix[i][j] = message.charAt(index++);
-				else
-					matrix[i][j] = 'X';
-			}
-		}
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				matrix[i][j] = index >= message.length() ? 'X' : message.charAt(index++);
 
 		StringBuilder cipher = new StringBuilder();
-		for (int j = 1; j <= cols; j++)
+		for (int k = 1; k <= cols; k++)
 			for (int i = 0; i < rows; i++)
-				cipher.append(matrix[i][this.keyOrder.indexOf(j)]);
+				cipher.append(matrix[i][keyOrder.indexOf(k)]);
 
 		return cipher.toString();
 	}
@@ -38,18 +33,19 @@ public class ColumnarTranspositionCipher extends Encryptor {
 	public String decrypt(String cipher) {
 		int cols = this.keyOrder.size();
 		int rows = cipher.length() / cols;
+
 		char[][] matrix = new char[rows][cols];
 
 		int index = 0;
-		for (int j = 1; j <= cols; j++)
+		for (int k = 1; k <= cols; k++)
 			for (int i = 0; i < rows; i++)
-				matrix[i][this.keyOrder.indexOf(j)] = cipher.charAt(index++);
+				matrix[i][keyOrder.indexOf(k)] = cipher.charAt(index++);
 
-		StringBuilder message = new StringBuilder();
+		StringBuilder msg = new StringBuilder();
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < cols; j++)
-				message.append(matrix[i][j]);
+				msg.append(matrix[i][j]);
 
-		return message.toString();
+		return msg.toString();
 	}
 }
