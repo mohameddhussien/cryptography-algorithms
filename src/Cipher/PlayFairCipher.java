@@ -40,9 +40,9 @@ public class PlayFairCipher extends Encryptor {
 
 			char second = message.charAt(i + 1);
 
-			if (first == second) {
+			if (first == second)
 				result.append('x');
-			} else {
+			else {
 				result.append(second);
 				i++;
 			}
@@ -96,12 +96,8 @@ public class PlayFairCipher extends Encryptor {
 		String preparedMessage = this.prepare(message);
 		StringBuilder cipher = new StringBuilder();
 
-		for (int i = 0; i < preparedMessage.length(); i += 2) {
-			char current = preparedMessage.charAt(i);
-			char next = preparedMessage.charAt(i + 1);
-
-			cipher.append(this.substitute(current, next, false));
-		}
+		for (int i = 0; i < preparedMessage.length(); i += 2)
+			cipher.append(this.substitute(preparedMessage.charAt(i), preparedMessage.charAt(i + 1), false));
 
 		return cipher.toString();
 	}
@@ -112,12 +108,8 @@ public class PlayFairCipher extends Encryptor {
 
 		StringBuilder message = new StringBuilder();
 
-		for (int i = 0; i < cipher.length(); i += 2) {
-			char current = cipher.charAt(i);
-			char next = cipher.charAt(i + 1);
-
-			message.append(this.substitute(current, next, true));
-		}
+		for (int i = 0; i < cipher.length(); i += 2)
+			message.append(this.substitute(cipher.charAt(i), cipher.charAt(i + 1), true));
 
 		return message.toString();
 	}
