@@ -109,6 +109,7 @@ public class AES extends Encryptor {
 			keys[i] = Integer.parseUnsignedInt(key.substring(i * 8, (i + 1) * 8), 16);
 
 		for (int i = 4; i < n; i++)
+			// Focus on index where [i] = [i - 4] not [i % 4] = [i - 1]
 			keys[i] = keys[i - 4] ^ (i % 4 == 0 ? g(keys[i - 1], i) : keys[i - 1]);
 
 		return keys;

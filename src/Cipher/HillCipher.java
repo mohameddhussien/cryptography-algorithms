@@ -19,7 +19,7 @@ public class HillCipher extends Encryptor {
 	public String encrypt(String message) {
 		String preparedMessage = this.prepare(message);
 		StringBuilder cipher = new StringBuilder();
-		for (int i = 0; i < preparedMessage.length(); i += this.dim) {
+		for (int i = 0; i < preparedMessage.length(); i += this.dim) { // I increments by dim not 1
 			int[] p = new int[this.dim], c = new int[this.dim];
 
 			for (int j = 0; j < this.dim; j++)
@@ -33,7 +33,7 @@ public class HillCipher extends Encryptor {
 			}
 
 			for (int col = 0; col < this.dim; col++)
-				cipher.append((char) (c[col] + 'a'));
+				cipher.append((char) (c[col] + 'a')); // Casting to char
 		}
 		return cipher.toString();
 	}

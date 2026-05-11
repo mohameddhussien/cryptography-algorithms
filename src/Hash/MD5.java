@@ -100,7 +100,8 @@ public class MD5 extends Hash {
 		System.arraycopy(messageBytes, 0, paddedMessageBytes, 0, messageBytes.length);
 		paddedMessageBytes[messageBytes.length] = (byte) 0x80;
 
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 8; i++) // 8 not paddedMessageBytes
+			// msgBits not msgBytes.length
 			paddedMessageBytes[paddedMessageBytes.length + i - 8] = (byte) (msgBits >>> (i * 8));
 
 		int A = A0, B = B0, C = C0, D = D0;

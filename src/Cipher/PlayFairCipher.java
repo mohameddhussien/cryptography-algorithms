@@ -17,8 +17,9 @@ public class PlayFairCipher extends Encryptor {
 		String deduplicated = combined
 				.chars()
 				.distinct()
-				.mapToObj(c -> String.valueOf((char) c))
-				.collect(Collectors.joining());
+				.mapToObj(x -> String.valueOf((char) x))
+				// Collectors.joining()
+				.collect(Collectors.joining()); // Collectors need to import utils.stream.Collectors
 
 		for (int i = 0; i < 25; i++)
 			matrix[i / 5][i % 5] = deduplicated.charAt(i);

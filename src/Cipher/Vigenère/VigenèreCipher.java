@@ -15,6 +15,7 @@ public class VigenèreCipher extends Encryptor {
 		this.key = this.key.toLowerCase().replaceAll("[^a-z]", "");
 
 		if (algorithm == VigenèreAlgorithm.REPEATING_KEY && this.key.length() < message.length())
+			// + 1
 			this.key = this.key.repeat(message.length() / this.key.length() + 1).substring(0, message.length());
 		if (algorithm == VigenèreAlgorithm.AUTO_KEY)
 			this.key = new StringBuilder(this.key + message).substring(0, message.length());
